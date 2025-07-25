@@ -1,63 +1,65 @@
 const categorias = [
-  "Comprensión Lectora",
-  "Matemática M1",
-  "Matemática M2",
-  "Historia",
+  "Lenguaje",
+  "M1",
+  "M2",
   "Ciencias",
-  "Notas",
+  "Historia",
+  "NEM",
   "Ranking"
 ];
 
-const camposContainer = document.getElementById("campos");
-const resultado = document.getElementById("resultado");
-const acumulado = document.getElementById("acumulado");
+const camposDiv = document.getElementById("campos");
+const resultadoDiv = document.getElementById("resultado");
+const acumuladoSpan = document.getElementById("acumulado");
 
 function crearCampos() {
-  categorias.forEach((categoria, index) => {
-    const row = document.createElement("div");
-    row.className = "row";
+  categorias.forEach(categoria => {
+    const fila = document.createElement("div");
+    fila.className = "input-row";
 
-    const label = document.createElement("label");
-    label.textContent = categoria;
+    const nombre = document.createElement("span");
+    nombre.textContent = categoria;
+    nombre.style.flex = "1";
+    nombre.style.textAlign = "center";
 
-    const inputPuntaje = document.createElement("input");
-    inputPuntaje.type = "number";
-    inputPuntaje.min = 0;
-    inputPuntaje.max = 1000;
-    inputPuntaje.placeholder = "puntaje";
-    inputPuntaje.id = `puntaje${index}`;
+    const puntaje = document.createElement("input");
+    puntaje.type = "number";
+    puntaje.min = 0;
+    puntaje.max = 1000;
+    puntaje.placeholder = "Puntaje";
 
-    const inputPorcentaje = document.createElement("input");
-    inputPorcentaje.type = "number";
-    inputPorcentaje.min = 0;
-    inputPorcentaje.max = 100;
-    inputPorcentaje.placeholder = "%";
-    inputPorcentaje.id = `porcentaje${index}`;
+    const ponderacion = document.createElement("input");
+    ponderacion.type = "number";
+    ponderacion.min = 0;
+    ponderacion.max = 100;
+    ponderacion.placeholder = "%";
 
-    inputPuntaje.addEventListener("input", calcular);
-    inputPorcentaje.addEventListener("input", calcular);
+    [puntaje, ponderacion].forEach(input => {
+      input.addEventListener("input", calcular);
+    });
 
-    row.appendChild(label);
-    row.appendChild(inputPuntaje);
-    row.appendChild(inputPorcentaje);
-    camposContainer.appendChild(row);
+    fila.appendChild(nombre);
+    fila.appendChild(puntaje);
+    fila.appendChild(ponderacion);
+    camposDiv.appendChild(fila);
   });
 }
 
 function calcular() {
   let total = 0;
-  let sumaPorcentajes = 0;
+  let sumaPonderaciones = 0;
 
-  categorias.forEach((_, index) => {
-    const puntaje = parseFloat(document.getElementById(`puntaje${index}`).value) || 0;
-    const porcentaje = parseFloat(document.getElementById(`porcentaje${index}`).value) || 0;
+  camposDiv.querySelectorAll(".input-row").forEach(fila => {
+    const inputs = fila.querySelectorAll("input");
+    const puntaje = parseFloat(inputs[0].value) || 0;
+    const ponderacion = parseFloat(inputs[1].value) || 0;
 
-    sumaPorcentajes += porcentaje;
-    total += (puntaje * porcentaje) / 100;
+    total += (puntaje * ponderacion) / 100;
+    sumaPonderaciones += ponderacion;
   });
 
-  resultado.textContent = Math.round(total);
-  acumulado.textContent = `${sumaPorcentajes}%`;
+  resultadoDiv.textContent = `Puntaje: ${Math.round(total)}`;
+  acumuladoSpan.textContent = `${sumaPonderaciones}%`;
 }
 
 crearCampos();
